@@ -1,0 +1,54 @@
+#LYRA_WIDGET {
+    padding: 5px 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white; border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 0 20px 20px 0;
+}
+
+.bootstrap .form-wrapper {
+    flex: 0 0 85%;
+    max-width: 85%;
+    padding: 15px 0;
+    margin: auto;
+}
+
+div.lyra-div {
+    padding: 5px;
+}
+
+a.lyra-doc-link {
+    margin-left: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+img.lyra-widget-img {
+    max-height: 300px;
+    max-width: 100%;
+    height: auto;
+}
+
+div.lyra-widget-div {
+    float: left; width: 40%;
+}
+
+p.lyra-widget-desc {
+    margin: 0 20px 20px 0
+}
+
+img.lyra-button-img {
+    width: 24px;
+    height: 24px;
+}
+
+.lyra-hide-element {
+    display: none !important;
+}
+
+.lyra-show-element {
+    display: block !important;
+}
