@@ -1,0 +1,6 @@
+**/local.properties
+.project
+.buildpath
+/archives/
+/build/
+.idea
