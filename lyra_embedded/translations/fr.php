@@ -50,3 +50,4 @@ $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_0ad207a47022c5ba4d99d915d39a0
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_7f1405a4460380a57ee6e8cd0d049ae3'] = 'Le remboursement de paiement fractionné n\'est pas supporté. Pensez à apporter les modifications nécessaires dans le Back Office %1$s.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_c980ad47f47c2b3f707a49627b5fce94'] = 'Transaction déjà annulée sur la passerelle de paiement.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_af3d78bd0b9fc881701d0ddf8a8a8bd7'] = 'Transaction déjà remboursée sur la passerelle de paiement.';
+$_MODULE['<{lyra_embedded}prestashop>cart_687ae6ebf50a06125319516eee9f5fdb'] = 'Votre paiement n\'a pas été accepté. Veuillez repasser votre commande.';
