@@ -50,3 +50,4 @@ $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_0ad207a47022c5ba4d99d915d39a0
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_7f1405a4460380a57ee6e8cd0d049ae3'] = 'No se admite reembolso de pago fraccionado. Considere hacer los cambios necesarios en el Back Office %1$s.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_c980ad47f47c2b3f707a49627b5fce94'] = 'Transacción ya cancelada en la pasarela de pago.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_af3d78bd0b9fc881701d0ddf8a8a8bd7'] = 'Transacción ya reembolsada en la pasarela de pago.';
+$_MODULE['<{lyra_embedded}prestashop>cart_687ae6ebf50a06125319516eee9f5fdb'] = 'Su pago no fue aceptado. Intente realizar de nuevo el pedido.';

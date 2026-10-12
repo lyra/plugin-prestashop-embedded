@@ -50,3 +50,4 @@ $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_0ad207a47022c5ba4d99d915d39a0
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_7f1405a4460380a57ee6e8cd0d049ae3'] = 'Refund of split payment is not supported. Please, consider making necessary changes in %1$s Back Office.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_c980ad47f47c2b3f707a49627b5fce94'] = 'Transaktion bereits im Zahlungs-Gateway storniert.';
 $_MODULE['<{lyra_embedded}prestashop>lyra_embedded_af3d78bd0b9fc881701d0ddf8a8a8bd7'] = 'Transaktion bereits im Zahlungs-Gateway erstattet.';
+$_MODULE['<{lyra_embedded}prestashop>cart_687ae6ebf50a06125319516eee9f5fdb'] = 'Ihre Zahlung wurde abgelehnt. Bitte führen Sie den Bestellvorgang erneut durch.';

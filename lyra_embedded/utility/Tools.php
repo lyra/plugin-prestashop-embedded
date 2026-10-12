@@ -58,7 +58,7 @@ class Tools
     private static $SUPPORT_EMAIL = 'https://support.lyra.com/hc/fr/requests/new';
 
     /** @var string The current plugin version */
-    private static $PLUGIN_VERSION = '1.0.0';
+    private static $PLUGIN_VERSION = '1.0.1';
 
     /** @var string The default context mode */
     private static $MODE = 'test';

@@ -118,7 +118,24 @@ class Lyra_EmbeddedReturnModuleFrontController extends ModuleFrontController
                 LyraTools::getLogger()->logInfo("Order #$orderId state updated successfully.");
             }
 
-            Tools::redirect('index.php?controller=history');
+            $customer = $this->context->customer ?? null;
+            if ($customer && $customer->isLogged()) {
+                LyraTools::getLogger()->logInfo("The customer is logged in, let's redirct them to order history page.");
+
+                Tools::redirect('index.php?controller=history');
+            } else {
+                LyraTools::getLogger()->logInfo("The customer is not logged in, let's redirect them to cart page.");
+
+                $cart = new Cart($order->id_cart);
+                $duplicate = $cart->duplicate();
+                $this->context->cookie->id_cart = $duplicate['cart']->id;
+
+                $this->context->controller->warning[] = $this->getTranslator()->trans('Your payment was not accepted. Please, try to re-order.', [],
+                    'Modules.Lyra_Embedded.Cart'
+                );
+
+                $this->context->controller->redirectWithNotifications('index.php?controller=cart');
+            }
         }
     }
 
