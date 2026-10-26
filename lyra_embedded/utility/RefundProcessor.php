@@ -81,11 +81,10 @@ class RefundProcessor implements \Lyranetwork\LyraEmbedded\Sdk\Refund\Processor
         $orderAmount = \Tools::ps_round($order->total_paid, $currency->getDecimals());
         $orderAmountInCents = $currency->convertAmountToInteger($orderAmount);
 
-        $orderDetails = \OrderDetail::getList($orderId);
         $orderRefundedAmount = 0;
-        foreach ($orderDetails as $orderDetail) {
-            // Retrieve the amount already refunded in PrestaShop.
-            $orderRefundedAmount += $orderDetail['total_refunded_tax_incl'];
+
+        foreach ($order->getOrderSlipsCollection() as $orderSlip) {
+            $orderRefundedAmount += $orderSlip->total_products_tax_incl + $orderSlip->total_shipping_tax_incl;
         }
 
         $orderRefundedAmountInCents = $currency->convertAmountToInteger($orderRefundedAmount);

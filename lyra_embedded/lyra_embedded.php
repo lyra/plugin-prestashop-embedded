@@ -401,6 +401,55 @@ class Lyra_Embedded extends PaymentModule
     }
 
     /**
+     * Get the checkout process of the order controller.
+     * OrderController::getCheckoutProcess() only exists since PrestaShop 1.7.7.
+     *
+     * @param OrderController $controller
+     * @return CheckoutProcess|null
+     */
+    private function getCheckoutProcess($controller)
+    {
+        if (method_exists($controller, 'getCheckoutProcess')) {
+            return $controller->getCheckoutProcess();
+        }
+
+        try {
+            $property = new ReflectionProperty($controller, 'checkoutProcess');
+            $property->setAccessible(true);
+
+            return $property->getValue($controller);
+        } catch (ReflectionException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the current step of the checkout process.
+     * CheckoutProcess::getCurrentStep() only exists since PrestaShop 1.7.7.
+     *
+     * @param CheckoutProcess $checkoutProcess
+     * @return CheckoutStepInterface|null
+     */
+    private function getCurrentCheckoutStep($checkoutProcess)
+    {
+        if (method_exists($checkoutProcess, 'getCurrentStep')) {
+            try {
+                return $checkoutProcess->getCurrentStep();
+            } catch (RuntimeException $e) {
+                return null;
+            }
+        }
+
+        foreach ($checkoutProcess->getSteps() as $step) {
+            if ($step->isCurrent()) {
+                return $step;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Payment function, display payment form in PrestaShop 1.7 and higher.
      *
      * @param array $params
@@ -410,7 +459,8 @@ class Lyra_Embedded extends PaymentModule
     {
         $controller = $this->context->controller;
         if ($controller instanceof OrderController) {
-            $currentStep = $controller->getCheckoutProcess()->getCurrentStep();
+            $checkoutProcess = $this->getCheckoutProcess($controller);
+            $currentStep = $checkoutProcess ? $this->getCurrentCheckoutStep($checkoutProcess) : null;
             if (! $currentStep instanceof CheckoutPaymentStep) {
                 // Do not create form token until payment step.
                 return;
@@ -718,7 +768,9 @@ class Lyra_Embedded extends PaymentModule
      */
     public function hookActionObjectOrderSlipAddBefore($orderSlip)
     {
-        if (! Tools::isSubmit('cancel_product')) {
+        if (! Tools::isSubmit('cancel_product') // PrestaShop >= 1.7.7
+            && ! Tools::isSubmit('partialRefund') // PrestaShop < 1.7.7
+            && ! Tools::isSubmit('cancelProduct')) { // PrestaShop < 1.7.7
             return;
         }
 
@@ -748,30 +800,27 @@ class Lyra_Embedded extends PaymentModule
         }
 
         // Get amount from OrderSlip.
-        $amount = $orderSlipObject->amount;
+        $amount = $orderSlipObject->total_products_tax_incl;
 
-        if (Tools::isSubmit('TaxMethod')) {
-           // Prestashop versions < 1.7.7.
-            $amount = ! Tools::getValue('TaxMethod') ? $orderSlipObject->total_products_tax_excl : $orderSlipObject->total_products_tax_incl;
+        if (version_compare(_PS_VERSION_, '1.7.7', '>=')) {
+            $cancelProduct = Tools::getValue('cancel_product');
+            $voucherType = isset($cancelProduct['voucher_refund_type']) ? (int) $cancelProduct['voucher_refund_type'] : 0;
+        } else {
+            $voucherType = (int) Tools::getValue('refund_voucher_off', 0);
+        }
+
+        $updateOrderSlip = false;
+        $applyDiscount = ($voucherType === 1) && ($order->total_discounts > 0) && ($order->getTaxCalculationMethod() == PS_TAX_INC);
+        if ($voucherType === 2) {
+            $amount = $orderSlipObject->amount;
+            $updateOrderSlip = true;
+        } elseif ($applyDiscount) {
+            $amount -= $order->total_discounts;
+            $updateOrderSlip = true;
         }
 
         // Add shipping cost amount.
         $amount += $orderSlipObject->shipping_cost_amount;
-
-        // Case of order with discount.
-        // Check if the merchant choose refund option: "Product(s) price, excluding amount of initial voucher".
-        if (version_compare(_PS_VERSION_, '1.7.7', '<')) {
-            $orderSlipType = Tools::isSubmit('refund_voucher_off') ?: 0;
-        } else {
-            $cancelProduct = Tools::isSubmit('cancel_product') ?? null;
-            $orderSlipType = $cancelProduct && isset($cancelProduct['voucher_refund_type']) ? $cancelProduct['voucher_refund_type'] : 0;
-        }
-
-        $updateOrderSlip = false;
-        if (($orderSlipType == 1) && ($order->total_discounts > 0)) {
-            $amount -= $order->total_discounts;
-            $updateOrderSlip = true;
-        }
 
         $client = new Lyranetwork\LyraEmbedded\Sdk\Refund\Api(
             new LyraRefundProcessor(),
@@ -840,7 +889,10 @@ class Lyra_Embedded extends PaymentModule
 
              $orderSlipObject->order_slip_type = 1;
              $orderSlipObject->amount = $amount;
-             $orderSlipObject->total_products_tax_incl -= $order->total_discounts;
+
+             if ($applyDiscount) {
+                 $orderSlipObject->total_products_tax_incl -= $order->total_discounts;
+             }
          }
 
          return true;
